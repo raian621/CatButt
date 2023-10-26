@@ -1,0 +1,50 @@
+name: CI Tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASS }}
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        
+    steps:
+      - uses: actions/checkout@v2
+      - name: setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+        
+      - name: install dependencies
+        run: go get ./...
+
+      - name: test
+        run: go test -v ./...
+        env: 
+          DB_PROV: ${{ secrets.DB_PROV }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_SSL:  ${{ secrets.DB_SSL }}
+          HOST: ${{ secrets.HOST }}
+          PORT: ${{ secrets.PORT }}

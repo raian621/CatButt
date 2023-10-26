@@ -2,39 +2,22 @@ VERSION := 0.0.1b
 DB_CONTAINER := catbook-postgres
 
 .PHONY: dev
-dev: deps dev-site dev-server
+dev: deps
 	@echo "Starting live reload setup for CatBook v$(VERSION)"
+	@air
 
 .PHONY: build
-build: deps build-site build-server
-	@echo "Building CatBook v$(VERSION)"
+build: deps
+	@echo "Building CatButt v$(VERSION)"
+	@go build
+
+.PHONY: dev
+dev: start-db
+	@air
 
 .PHONY: deps
-deps: site-deps server-deps
-
-.PHONY: dev-site
-dev-site:
-	@cd site; npm run dev
-
-.PHONY: dev-server
-dev-server: start-db
-	@cd server; air
-
-.PHONY: build-site
-build-site:
-	@cd site; npm run build
-
-.PHONY: build-server
-build-server: start-db
-	@cd server; go build
-
-.PHONY: site-deps
-site-deps:
-	@cd site; npm i
-
-.PHONY: server-deps
-server-deps:
-	@cd server; go get ./...
+deps:
+	@go get ./...
 
 .PHONY: db
 db:

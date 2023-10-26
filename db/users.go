@@ -3,13 +3,19 @@ package db
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"catbook.com/auth"
 	"catbook.com/util"
 )
 
-func CreateUser(userInfo *auth.UserRegistrationInfo, database *sql.DB) (err error) {
+type User struct {
+	UserId   string
+	Username string
+	Passhash string
+	Email    string
+}
+
+func CreateUser(userInfo *auth.UserRegistrationInfo, database *sql.DB) error {
 	if UserOrEmailExists(userInfo.Username, userInfo.Email, database) {
 		return errors.New("user already exists")
 	}
@@ -28,8 +34,9 @@ func CreateUser(userInfo *auth.UserRegistrationInfo, database *sql.DB) (err erro
 	return err
 }
 
-func DeleteUser(userCreds *auth.UserCredentials, database *sql.DB) error {
-	return nil
+func DeleteUser(userId string, database *sql.DB) error {
+	_, err := database.Exec(`DELETE FROM users WHERE id=$1;`, userId)
+	return err
 }
 
 func UserOrEmailExists(username, email string, database *sql.DB) bool {
@@ -49,11 +56,16 @@ func ValidUserCredentials(creds *auth.UserCredentials, database *sql.DB) (bool, 
 
 	var passhash string
 	if err := row.Scan(&passhash); err == sql.ErrNoRows {
-		fmt.Println(passhash)
-
 		return false, nil
 	}
 
-	fmt.Println(passhash)
 	return util.MatchHash(creds.Password, passhash)
+}
+
+func GetUserByUsername(username string, database *sql.DB) (*User, error) {
+	var user User
+	row := database.QueryRow(`SELECT id, username, email FROM users WHERE username=$1;`, username)
+	err := row.Scan(&user.UserId, &user.Username, &user.Email)
+
+	return &user, err
 }

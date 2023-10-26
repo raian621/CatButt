@@ -17,7 +17,7 @@ func LoadEnvVars(envFilePath string) {
 	}
 }
 
-func DeleteEnvVars() {
+func DeleteDatabaseEnvVars() {
 	os.Unsetenv("DB_PROV")
 	os.Unsetenv("DB_HOST")
 	os.Unsetenv("DB_USER")

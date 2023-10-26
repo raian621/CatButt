@@ -31,7 +31,6 @@ func TestMatchHash(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	t.Log(len(hash), "\n\n")
 
 	if matches {
 		t.Error("Hash was not supposed to match original text")
