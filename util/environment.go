@@ -12,7 +12,15 @@ func LoadEnvVars(envFilePath string) {
 		err := godotenv.Load(envFilePath)
 
 		if err != nil {
-			panic(err)
+			requiredEnvVars := []string{
+				"DB_PROV", "DB_HOST", "DB_USER", "DB_PASS",
+				"DB_NAME", "DB_PORT", "DB_SSL",
+			}
+			for _, envVar := range requiredEnvVars {
+				if os.Getenv(envVar) == "" {
+					panic(err)
+				}
+			}
 		}
 	}
 }

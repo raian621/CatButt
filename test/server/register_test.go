@@ -14,7 +14,6 @@ func TestRegisterRoute(t *testing.T) {
 	util.LoadEnvVars("../../.env")
 	database, err := server.NewDatabase()
 	defer database.Close()
-	util.DeleteDatabaseEnvVars()
 
 	if err != nil {
 		t.Error(err)
@@ -53,7 +52,6 @@ func TestRegisterRouteInvalidFields(t *testing.T) {
 	util.LoadEnvVars("../../.env")
 	database, err := server.NewDatabase()
 	defer database.Close()
-	util.DeleteDatabaseEnvVars()
 
 	if err != nil {
 		t.Error(err)
